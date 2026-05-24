@@ -15,11 +15,12 @@ workflows:
         script: |
           npx cap sync ios
 
-      - name: Build iOS app
+            - name: Build iOS app
         script: |
           xcode-project build-ipa \
             --project ios/App/App.xcodeproj \
-            --scheme App
+            --scheme App \
+            --export-options-plist export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
