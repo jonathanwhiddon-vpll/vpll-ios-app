@@ -1,0 +1,9 @@
+{
+  "appId": "com.vpll.app",
+  "appName": "Villa Park Little League",
+  "webDir": "www",
+  "server": {
+    "url": "https://vpll-app.vercel.app",
+    "cleartext": false
+  }
+}
