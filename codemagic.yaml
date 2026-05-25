@@ -3,8 +3,20 @@ workflows:
     name: iOS Capacitor Build
 
     environment:
+      groups:
+        - appstore
+
       xcode: latest
       node: latest
+
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.vpll.app
+
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
 
     scripts:
       - name: Install dependencies
@@ -15,12 +27,21 @@ workflows:
         script: |
           npx cap sync ios
 
-            - name: Build iOS app
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files com.vpll.app \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
+
+          xcode-project use-profiles
+
+      - name: Build iOS app
         script: |
           xcode-project build-ipa \
-            --project ios/App/App.xcodeproj \
-            --scheme App \
-            --export-options-plist export_options.plist
+            --workspace ios/App/App.xcworkspace \
+            --scheme App
 
     artifacts:
       - build/ios/ipa/*.ipa
